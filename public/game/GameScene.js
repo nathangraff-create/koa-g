@@ -6,8 +6,18 @@ import SaveService from "./services/SaveService.js";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
-    super("GameScene");
+    super({ key: "GameScene" }); // 🔥 importante
   }
+
+  create() {
+    console.log("GameScene carregada"); // DEBUG
+
+    this.add.text(100, 100, "Jogo rodando!", {
+      fontSize: "20px",
+      color: "#ffffff"
+    });
+  }
+}
 
   async create() {
     this.inventory = new InventorySystem();
