@@ -3,6 +3,7 @@ import HeroSystem from "./systems/HeroSystem.js";
 import CombatSystem from "./systems/CombatSystem.js";
 import { generateItem } from "./systems/LootSystem.js";
 import SaveService from "./services/SaveService.js";
+import MissionSystem from "./systems/MissionSystem.js";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -17,6 +18,7 @@ export default class GameScene extends Phaser.Scene {
     this.heroSystem = new HeroSystem(this.inventory);
     this.combatSystem = new CombatSystem(this.heroSystem);
     this.saveService = new SaveService();
+	this.missionSystem = new MissionSystem(this);
 
     // Load save
     try {
@@ -39,6 +41,21 @@ export default class GameScene extends Phaser.Scene {
     this.enemyText = this.add.text(330, 180, "", { color: "#fff" });
     this.goldText = this.add.text(20, 20, "", { color: "#ffd700" });
     this.levelText = this.add.text(20, 50, "", { color: "#00ffff" });
+	// BOTÃO MISSÃO
+    this.missionButton = this.add.rectangle(400, 550, 220, 60, 0x6666ff)
+  .setInteractive()
+  .on("pointerdown", () => {
+    this.missionSystem.startMission();
+  });
+
+    this.missionText = this.add.text(340, 535, "Iniciar Missão", {
+  color: "#fff"
+});
+
+// BARRA DE PROGRESSO
+   this.progressBg = this.add.rectangle(400, 500, 300, 20, 0x222222);
+   this.progressBar = this.add.rectangle(250, 500, 0, 20, 0x00ff00)
+  .setOrigin(0, 0.5);
 
     // 🖱 Clique para atacar
     this.input.on("pointerdown", () => {
@@ -65,10 +82,21 @@ export default class GameScene extends Phaser.Scene {
   // ⚔️ Combate automático
   updateCombat() {
     this.hitEnemy(5); // dano passivo
+	this.missionSystem.update(100); // tempo fake por enquanto
 
     this.enemyText.setText(`Enemy HP: ${Math.floor(this.enemy.hp)}`);
     this.goldText.setText(`Gold: ${this.gold}`);
     this.levelText.setText(`Level: ${this.level}`);
+	const progress = this.missionSystem.getProgress();
+
+    this.progressBar.width = 300 * progress;
+
+// mudar texto do botão
+    if (this.missionSystem.isRunning()) {
+  this.missionText.setText("Em missão...");
+} else {
+  this.missionText.setText("Iniciar Missão");
+}
 
     if (this.enemy.hp <= 0) {
       this.killEnemy();
@@ -114,7 +142,12 @@ export default class GameScene extends Phaser.Scene {
       this.inventory.addItem(item);
       console.log("Drop:", item);
     }
-
+generateItemDrop() {
+  return {
+    name: "Item " + Math.floor(Math.random() * 100),
+    rarity: "common"
+  };
+}
     this.enemy = this.spawnEnemy();
   }
 
