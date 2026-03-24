@@ -6,30 +6,27 @@ import SaveService from "./services/SaveService.js";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
-    super({ key: "GameScene" }); // 🔥 importante
+    super({ key: "GameScene" });
   }
-
-  create() {
-    console.log("GameScene carregada"); // DEBUG
-
-    this.add.text(100, 100, "Jogo rodando!", {
-      fontSize: "20px",
-      color: "#ffffff"
-    });
-  }
-}
 
   async create() {
+    console.log("Scene iniciou");
+
     this.inventory = new InventorySystem();
     this.heroSystem = new HeroSystem(this.inventory);
     this.combatSystem = new CombatSystem(this.heroSystem);
     this.saveService = new SaveService();
 
-    const data = await this.saveService.load();
+    try {
+      const data = await this.saveService.load();
 
-    this.gold = data.player?.gold || 0;
-    this.inventory.items = data.inventory || [];
-    this.inventory.equipment = data.equipment || {};
+      this.gold = data.player?.gold || 0;
+      this.inventory.items = data.inventory || [];
+      this.inventory.equipment = data.equipment || {};
+    } catch (e) {
+      console.error("Erro ao carregar save:", e);
+      this.gold = 0;
+    }
 
     this.enemy = this.spawnEnemy();
 
@@ -46,6 +43,8 @@ export default class GameScene extends Phaser.Scene {
       callback: this.autoSave,
       callbackScope: this
     });
+
+    this.add.text(100, 100, "Rodando", { color: "#fff" });
   }
 
   updateCombat() {
@@ -71,7 +70,7 @@ export default class GameScene extends Phaser.Scene {
 
   autoSave() {
     this.saveService.save({
-      gold: this.gold,
+      player: { gold: this.gold },
       lastLogin: Date.now(),
       inventory: this.inventory.items,
       equipment: this.inventory.equipment
