@@ -1,18 +1,24 @@
 export default class SaveService {
-  constructor() {
-    this.baseUrl = "http://localhost:3000";
-  }
-
   async load() {
-    const res = await fetch(`${this.baseUrl}/player/1`);
-    return res.json();
+    try {
+      const res = await fetch("/player/1"); // ou sua API real futura
+      return await res.json();
+    } catch (e) {
+      console.warn("API falhou, usando localStorage");
+
+      const data = localStorage.getItem("save");
+
+      return data
+        ? JSON.parse(data)
+        : {
+            player: { gold: 0 },
+            inventory: [],
+            equipment: {}
+          };
+    }
   }
 
-  async save(data) {
-    await fetch(`${this.baseUrl}/player/1`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
+  save(data) {
+    localStorage.setItem("save", JSON.stringify(data));
   }
 }
