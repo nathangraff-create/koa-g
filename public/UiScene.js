@@ -1,4 +1,4 @@
-import UIManager from "./ui/UIManager.js";
+import UIManager from "./game/ui/UIManager.js";
 
 export default class UIScene extends Phaser.Scene {
   constructor() {
