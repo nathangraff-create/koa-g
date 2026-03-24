@@ -1,12 +1,11 @@
-import GameScene from "/game/GameScene.js";
-import UIScene from "/UiScene.js";
+import GameScene from "./game/GameScene.js";
 
 const config = {
   type: Phaser.AUTO,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 800,
+  height: 600,
   parent: "game",
-  scene: [GameScene, UIScene]
+  scene: [GameScene]
 };
 
 new Phaser.Game(config);
