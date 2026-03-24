@@ -130,6 +130,14 @@ export default class GameScene extends Phaser.Scene {
       duration: 100
     });
   }
+  generateItemDrop() {
+  return {
+    name: "Item " + Math.floor(Math.random() * 100),
+    rarity: "common"
+  };
+}
+    this.enemy = this.spawnEnemy();
+  }
 
   // ☠️ Matar inimigo
   killEnemy() {
@@ -142,14 +150,6 @@ export default class GameScene extends Phaser.Scene {
       this.inventory.addItem(item);
       console.log("Drop:", item);
     }
-generateItemDrop() {
-  return {
-    name: "Item " + Math.floor(Math.random() * 100),
-    rarity: "common"
-  };
-}
-    this.enemy = this.spawnEnemy();
-  }
 
   // 👹 Spawn inimigo
   spawnEnemy() {
